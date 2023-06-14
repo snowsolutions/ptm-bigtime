@@ -1,0 +1,64 @@
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<div class="time-block">
+    <span class="time-value" id="time-minute"></span>
+</div>
+<div class="debug-flag">
+    <span>BUG</span>
+</div>
+<script>
+    jQuery(document).ready(function () {
+        function updateTime() {
+            let minute = document.getElementById('time-minute')
+            let current = new Date();
+            let min = current.getMinutes();
+            console.log(min);
+            if (min < 10) {
+                min = "0" + min;
+            }
+            minute.innerHTML = min
+        }
+        setInterval(updateTime, 500)
+
+        jQuery('.debug-flag').click(function () {
+            let _this = jQuery(this)
+            _this.toggleClass('off')
+        })
+    })
+</script>
+<style>
+    .debug-flag {
+        background-color: red;
+        height: 50px;
+        width: 50px;
+        float: left;
+        margin: 0 5px;
+        color: white;
+    }
+    .debug-flag.off {
+        background-color: green;
+    }
+    .debug-flag span {
+        font-size: 16px;
+        line-height: 16px;
+        margin-top: 17px;
+        width: 100%;
+        display: inline-block;
+        text-align: center;
+    }
+    .time-block {
+        background-color: black;
+        height: 100px;
+        width: 100px;
+        float: left;
+    }
+    .time-value {
+        color: white;
+        font-size: 70px;
+        line-height: 70px;
+        letter-spacing: 3px;
+        margin-top: 15px;
+        text-align: center;
+        width: 100%;
+        display: inline-block;
+    }
+</style>
