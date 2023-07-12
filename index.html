@@ -1,4 +1,4 @@
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="/assets/code.jquery.com_jquery-3.7.0.min.js"></script>
 <div class="function-row">
     <div class="time-block">
         <span class="big-num" id="time-minute"></span>
@@ -16,6 +16,10 @@
     </div>
     <div class="function-block">
         <button class="function-btn setup-timer">Setup</button>
+    </div>
+    <div class="function-block test-macro">
+        <span class="function-label">Macro</span>
+        <span class="function-state">Test</span>
     </div>
 </div>
 <div class="function-row">
@@ -36,241 +40,21 @@
         <button class="function-btn set-safe-hour">Set</button>
     </div>
 </div>
-<script>
-    jQuery(document).ready(function () {
-        var runningTimer = true;
-        var setupRunning = false;
-        var timeInterval = setInterval(updateTime, 500);
-        var safeHourInterval = null;
-        var isInSafeHour = false;
-        var startSafeHour = 2;
-        var endSafeHour = 8;
-
-        //Init
-        init();
-
-        function init() {
-            initSafeHour()
-        }
-
-        function updateTime() {
-            let minute = document.getElementById("time-minute");
-            let current = new Date();
-            let min = current.getMinutes();
-            if (min < 10) {
-                min = "0" + min;
-            }
-            minute.innerHTML = min;
-        }
-
-        function initSafeHour() {
-            let safeHStart = $('#safe-hour-start .text-value')
-            let safeHEnd = $('#safe-hour-end .text-value')
-            safeHStart.text(startSafeHour)
-            safeHEnd.text(endSafeHour)
-            safeHourInterval = setInterval(updateSafeHour, 500);
-        }
-
-        function updateSafeHour() {
-            let safeHour = $('#safe-status')
-            let current = new Date();
-            let curentHour = current.getHours();
-            if (curentHour < 10) {
-                curentHour = "0" + curentHour;
-            }
-            safeHour.text(curentHour)
-
-            if (startSafeHour <= curentHour && curentHour <= endSafeHour) {
-                console.log('in safe hour');
-                isInSafeHour = true;
-            } else {
-                console.log('NOT in safe hour');
-                isInSafeHour = false;
-            }
-            if (!isInSafeHour) {
-                safeHour.removeClass('safe')
-            } else {
-                safeHour.addClass('safe')
-            }
-        }
-
-        function hitCore() {
-            let counter = jQuery(".core-time span");
-            let count = parseInt(counter.text());
-            counter.text(count + 1);
-        }
-
-        function toggleTimer(e = null) {
-            if (runningTimer) {
-                clearInterval(timeInterval);
-                timeInterval = null;
-                runningTimer = false;
-                if (e) {
-                    e.text("OFF");
-                }
-            } else {
-                runningTimer = true;
-                timeInterval = setInterval(updateTime, 500);
-                if (e) {
-                    e.text("ON");
-                }
-            }
-        }
-
-        function setupTimer(e = null) {
-            let toggleTimerE = jQuery(".toggle-timer");
-            toggleTimerE.toggleClass("off");
-            let toggleText = toggleTimerE.find(".function-state");
-            e.text("OFF");
-            runningTimer = false;
-            clearInterval(timeInterval);
-            let start = 10;
-            let minute = jQuery("#time-minute");
-            minute.text(start);
-            let setupIntv = setInterval(function () {
-                minute.text(start);
-                if (start == 20) {
-                    clearInterval(setupIntv);
-                    toggleTimer(toggleText);
-                    toggleTimerE.toggleClass("off");
-                }
-                start++;
-            }, 2000);
-        }
-
-        jQuery(".hit-core").click(function () {
-            hitCore();
-        });
-
-        jQuery(".toggle-timer").click(function () {
-            let _this = jQuery(this);
-            let e = _this.find(".function-state");
-            toggleTimer(e);
-        });
-        jQuery(".setup-timer").click(function () {
-            let _this = jQuery(this);
-            let e = jQuery(".toggle-timer .function-state");
-            setupTimer(e);
-        });
-        jQuery(".toggle").click(function () {
-            let _this = jQuery(this);
-            _this.toggleClass("off");
-        });
-        
-        jQuery(".set-safe-hour").click(function () {
-            startSafeHour = $('#safe-hour-start input').val()
-            endSafeHour = $('#safe-hour-end input').val()
-            let safeHStart = $('#safe-hour-start .text-value')
-            let safeHEnd = $('#safe-hour-end .text-value')
-            safeHStart.text(startSafeHour)
-            safeHEnd.text(endSafeHour)
-            clearInterval(safeHourInterval)
-            initSafeHour()
-        });
-    });
-</script>
-<style>
-    .function-row {
-        width: 100%;
-        display: inline-block;
-        margin: 5px 0;
-    }
-    .function-label {
-        color: white;
-        background-color: rgb(201, 85, 13);
-        position: absolute;
-        top: -17px;
-        right: 0;
-    }
-    .function-state {
-        color: white;
-        position: absolute;
-        top: 7px;
-    }
-    .function-btn {
-        width: 40px;
-        height: 40px;
-        text-align: center;
-        margin: 5px;
-        box-shadow: none;
-        padding: 0;
-    }
-    .text-block {
-        background-color: black;
-        height: 50px;
-        width: 110px;
-        float: left;
-        margin: 0 5px;
-        color: white;
-        position: relative;
-    }
-    .text-block input {
-        width: 50px;
-        margin: 0 5px;
-        color: green;
-    }
-    .text-block .text-label {
-    }
-    .text-block .text-value {
-        color: green;
-        font-size: 25px;
-    }
-    .function-block {
-        background-color: black;
-        height: 50px;
-        width: 50px;
-        float: left;
-        margin: 0 5px;
-        color: white;
-        position: relative;
-    }
-    .function-block span {
-        font-size: 16px;
-        line-height: 16px;
-        margin-top: 17px;
-        width: 100%;
-        display: inline-block;
-        text-align: center;
-    }
-    .toggle {
-        background-color: green;
-    }
-    .toggle.off {
-        background-color: red;
-    }
-    .toggle span {
-        font-size: 14px;
-    }
-    .time-block {
-        background-color: black;
-        height: 100px;
-        width: 100px;
-        float: left;
-    }
-    .big-num {
-        color: white;
-        font-size: 70px;
-        line-height: 70px;
-        letter-spacing: 3px;
-        margin-top: 15px;
-        text-align: center;
-        width: 100%;
-        display: inline-block;
-    }
-    .time-value {
-        color: white;
-        font-size: 70px;
-        line-height: 70px;
-        letter-spacing: 3px;
-        margin-top: 15px;
-        text-align: center;
-        width: 100%;
-        display: inline-block;
-    }
-    .time-block #safe-status {
-        background-color: red;
-    }
-    .time-block #safe-status.safe {
-        background-color: green;
-    }
-</style>
+<div class="test-modal hide">
+    <div class="check-list">
+        <div class="check-list-item hp-bar">HP Bar</div>
+        <div class="check-list-item auto-attack">Auto attack</div>
+        <div class="check-list-item random-map-1">Random map 1</div>
+        <div class="check-list-item random-map-2">Random map 2</div>
+        <div class="check-list-item random-map-3">Random map 3</div>
+        <div class="check-list-item random-map-4">Random map 4</div>
+        <div class="check-list-item random-map-5">Random map 5</div>
+        <div class="check-list-item random-map-6">Random map 6</div>
+        <div class="check-list-item random-map-7">Random map 7</div>
+        <div class="check-list-item random-map-8">Random map 8</div>
+        <div class="check-list-item random-map-9">Random map 9</div>
+        <div class="check-list-item random-map-0">Random map 10</div>
+    </div>
+</div>
+<script src="/assets/app.js"></script>
+<link rel="stylesheet" href="/assets/app.css">

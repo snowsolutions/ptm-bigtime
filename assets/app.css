@@ -1,0 +1,149 @@
+.test-modal {
+    position: absolute;
+    top: 0;
+    left: 112px;
+    background-color: grey;
+    padding: 8px;
+}
+.function-row {
+    width: 100%;
+    display: inline-block;
+    margin: 5px 0;
+}
+
+.function-label {
+    color: white;
+    background-color: rgb(201, 85, 13);
+    position: absolute;
+    top: -17px;
+    right: 0;
+}
+
+.function-state {
+    color: white;
+    position: absolute;
+    top: 7px;
+}
+
+.function-btn {
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    margin: 5px;
+    box-shadow: none;
+    padding: 0;
+}
+
+.text-block {
+    background-color: black;
+    height: 50px;
+    width: 110px;
+    float: left;
+    margin: 0 5px;
+    color: white;
+    position: relative;
+}
+
+.text-block input {
+    width: 50px;
+    margin: 0 5px;
+    color: green;
+}
+
+.text-block .text-label {
+}
+
+.text-block .text-value {
+    color: green;
+    font-size: 25px;
+}
+
+.function-block {
+    background-color: black;
+    height: 50px;
+    width: 50px;
+    float: left;
+    margin: 0 5px;
+    color: white;
+    position: relative;
+}
+
+.green {
+    background-color: green;
+}
+
+.function-block span {
+    font-size: 16px;
+    line-height: 16px;
+    margin-top: 17px;
+    width: 100%;
+    display: inline-block;
+    text-align: center;
+}
+
+.toggle {
+    background-color: green;
+}
+
+.toggle.off {
+    background-color: red;
+}
+
+.toggle span {
+    font-size: 14px;
+}
+
+.time-block {
+    background-color: black;
+    height: 100px;
+    width: 100px;
+    float: left;
+}
+
+.big-num {
+    color: white;
+    font-size: 70px;
+    line-height: 70px;
+    letter-spacing: 3px;
+    margin-top: 15px;
+    text-align: center;
+    width: 100%;
+    display: inline-block;
+}
+
+.time-value {
+    color: white;
+    font-size: 70px;
+    line-height: 70px;
+    letter-spacing: 3px;
+    margin-top: 15px;
+    text-align: center;
+    width: 100%;
+    display: inline-block;
+}
+
+.time-block #safe-status {
+    background-color: red;
+}
+
+.time-block #safe-status.safe {
+    background-color: green;
+}
+.hide {
+    display: none;
+}
+.test-modal .check-list {
+
+}
+.test-modal .check-list-item {
+    background-color:red;
+    border-radius: 8px;
+    border: 1px solid white;
+    padding: 2px 4px;
+    margin: 5px 0;
+    color: white;
+    text-align: center;
+}
+.test-modal .check-list-item.checked {
+    background-color:green;
+}

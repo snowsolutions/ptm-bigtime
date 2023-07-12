@@ -5,7 +5,8 @@ services:
     container_name: bigtime
     image: ubuntu/apache2:latest
     volumes:
-      - ./src/index.html:/var/www/html/index.html
+      - ./index.html:/var/www/html/index.html
+      - ./assets:/var/www/html/assets
     restart: always
     ports:
       - 9999:80
