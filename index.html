@@ -57,8 +57,8 @@
             let minute = document.getElementById("time-minute");
             let current = new Date();
             let min = current.getMinutes();
-            if (min < 10) {
-                min = "0" + min;
+            if (min > 10) {
+                min = min.toString().substring(1,2);
             }
             minute.innerHTML = min;
         }
