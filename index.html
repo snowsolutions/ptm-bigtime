@@ -43,6 +43,15 @@
     <div class="function-block">
         <button class="function-btn dead-threshold">Dead</button>
     </div>
+    <div class="text-block" id="dead-count">
+        <span class="text-label">Dead count</span>
+        <span class="text-value"></span>
+    </div>
+</div>
+<div class="function-row">
+    <div class="normal-block poison-task-block">
+        <span class="big-num" id="poison-task">Poison</span>
+    </div>
 </div>
 <script>
     jQuery(document).ready(function () {
@@ -53,12 +62,14 @@
         var isInSafeHour = false;
         var startSafeHour = 2;
         var endSafeHour = 8;
+        var deadCount = 0;
 
         //Init
         init();
 
         function init() {
             initSafeHour()
+            $('#dead-count span.text-value').text(deadCount)
         }
 
         function updateTime() {
@@ -146,17 +157,26 @@
             }, 12000);
         }
 
-        function turnOnDeadThreshold() {
+        function checkDeadThreshold() {
             console.log('dead');
-            $('.critical-flag-block').css('background-color', 'red')
+            $('#dead-count span.text-value').text(deadCount)
+            if (deadCount >= 5) {
+                $('.critical-flag-block').css('background-color', 'red')
+            }
         }
 
         jQuery(".hit-core").click(function () {
             hitCore();
         });      
 
+        jQuery(".poison-task-block").click(function () {
+            var _this = $(this);
+            _this.toggleClass('active');
+        });    
+
         jQuery(".dead-threshold").click(function () {
-            turnOnDeadThreshold();
+            deadCount++;
+            checkDeadThreshold();
         });
 
         jQuery(".toggle-timer").click(function () {
@@ -297,6 +317,16 @@
         background-color: green;
     }
     .critical-flag-block {
+        background-color: green;
+    }
+    .poison-task-block {
+        font-size: 30px;
+        line-height: 30px;
+        letter-spacing: 3px;
+        margin-top: 35px;
+        background-color: red;
+    }
+    .poison-task-block.active {
         background-color: green;
     }
 </style>
