@@ -52,6 +52,9 @@
     <div class="normal-block poison-task-block">
         <span class="big-num" id="poison-task">Poison</span>
     </div>
+        <div class="normal-block iron2-task-block">
+        <span class="big-num" id="iron2-task">Iron2</span>
+    </div>
 </div>
 <script>
     jQuery(document).ready(function () {
@@ -170,6 +173,11 @@
         });      
 
         jQuery(".poison-task-block").click(function () {
+            var _this = $(this);
+            _this.toggleClass('active');
+        });
+
+        jQuery(".iron2-task-block").click(function () {
             var _this = $(this);
             _this.toggleClass('active');
         });    
@@ -322,13 +330,13 @@
     .poison-task-block {
         background-color: red;
     }
-    .poison-task-block #poison-task {
+    .poison-task-block #poison-task, .iron2-task-block #iron2-task {
         font-size: 30px;
         line-height: 30px;
         letter-spacing: 3px;
         margin-top: 35px;
     }
-    .poison-task-block.active {
+    .poison-task-block.active, .iron2-task-block.active {
         background-color: green;
     }
 </style>
