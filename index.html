@@ -98,7 +98,7 @@
             let safeHEnd = $('#safe-hour-end .text-value')
             safeHStart.text(startSafeHour)
             safeHEnd.text(endSafeHour)
-            safeHourInterval = setInterval(updateSafeHour, 500);
+            //safeHourInterval = setInterval(updateSafeHour, 500);
         }
 
         function initServerResetObserver() {
@@ -110,14 +110,14 @@
             let currentHour = current.getHours();
             let currentMin = current.getMinutes();
             let currentSec = current.getSeconds()
-            if (currentHour == window.serverResetHour && currentMin == window.serverResetMin && currentSec < 10) {
+            if (currentHour == window.serverResetHour && currentMin == window.serverResetMin && currentSec < 3) {
                 if (!window.serverResetFlag) {
                     $('.day-reset-task-block').addClass('active')
                     window.serverResetFlag = true;
                     setTimeout(function () {
                         $('.day-reset-task-block').removeClass('active')
                         window.serverResetFlag = false;
-                    }, 5000)
+                    }, 2000)
                 }
             }
         }
