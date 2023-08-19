@@ -55,6 +55,9 @@
     <div class="normal-block iron2-task-block">
         <span class="big-num" id="iron2-task">Iron2</span>
     </div>
+    <div class="normal-block day-reset-task-block">
+        <span class="big-num" id="day-reset-task">Reset</span>
+    </div>
 </div>
 <script>
     jQuery(document).ready(function () {
@@ -66,12 +69,17 @@
         var startSafeHour = 2;
         var endSafeHour = 8;
         var deadCount = 0;
+        var serverResetObserver = null;
+        window.serverResetHour = 4;
+        window.serverResetMin = 0;
+        window.serverResetFlag = false;
 
         //Init
         init();
 
         function init() {
             initSafeHour()
+            initServerResetObserver()
             $('#dead-count span.text-value').text(deadCount)
         }
 
@@ -93,16 +101,37 @@
             safeHourInterval = setInterval(updateSafeHour, 500);
         }
 
+        function initServerResetObserver() {
+            serverResetObserver = setInterval(serverResetObserve, 500);
+        }
+
+        function serverResetObserve() {
+            let current = new Date();
+            let currentHour = current.getHours();
+            let currentMin = current.getMinutes();
+            let currentSec = current.getSeconds()
+            if (currentHour == window.serverResetHour && currentMin == window.serverResetMin && currentSec < 10) {
+                if (!window.serverResetFlag) {
+                    $('.day-reset-task-block').addClass('active')
+                    window.serverResetFlag = true;
+                    setTimeout(function () {
+                        $('.day-reset-task-block').removeClass('active')
+                        window.serverResetFlag = false;
+                    }, 5000)
+                }
+            }
+        }
+
         function updateSafeHour() {
             let safeHour = $('#safe-status')
             let current = new Date();
-            let curentHour = current.getHours();
-            if (curentHour < 10) {
-                curentHour = "0" + curentHour;
+            let currentHour = current.getHours();
+            if (currentHour < 10) {
+                currentHour = "0" + currentHour;
             }
-            safeHour.text(curentHour)
+            safeHour.text(currentHour)
 
-            if (startSafeHour <= curentHour && curentHour <= endSafeHour) {
+            if (startSafeHour <= currentHour && currentHour <= endSafeHour) {
                 console.log('in safe hour');
                 isInSafeHour = true;
             } else {
@@ -180,7 +209,12 @@
         jQuery(".iron2-task-block").click(function () {
             var _this = $(this);
             _this.toggleClass('active');
-        });    
+        }); 
+
+        jQuery(".day-reset-task-block").click(function () {
+            var _this = $(this);
+            _this.toggleClass('active');
+        });
 
         jQuery(".dead-threshold").click(function () {
             deadCount++;
@@ -329,14 +363,17 @@
     }
     .poison-task-block, .iron2-task-block {
         background-color: red;
+        height: 98px;
+        width: 98px;
+        border: 1px solid black;
     }
-    .poison-task-block #poison-task, .iron2-task-block #iron2-task {
-        font-size: 30px;
-        line-height: 30px;
+    .poison-task-block #poison-task, .iron2-task-block #iron2-task, .day-reset-block #day-reset-task {
+        font-size: 24px;
+        line-height: 34px;
         letter-spacing: 3px;
-        margin-top: 35px;
+        margin-top: 38px;
     }
-    .poison-task-block.active, .iron2-task-block.active {
+    .poison-task-block.active, .iron2-task-block.active, .day-reset-task-block.active {
         background-color: green;
     }
 </style>
