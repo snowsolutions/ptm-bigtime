@@ -58,6 +58,9 @@
     <div class="normal-block day-reset-task-block">
         <span class="big-num" id="day-reset-task">Reset</span>
     </div>
+    <div class="normal-block force-pve-task-block">
+        <span class="big-num" id=force-pve-task">Force PVE</span>
+    </div>
 </div>
 <script>
     jQuery(document).ready(function () {
@@ -216,6 +219,11 @@
             _this.toggleClass('active');
         });
 
+        jQuery(".force-pve-task-block").click(function () {
+            var _this = $(this);
+            _this.toggleClass('active');
+        });
+
         jQuery(".dead-threshold").click(function () {
             deadCount++;
             checkDeadThreshold();
@@ -367,13 +375,13 @@
         width: 98px;
         border: 1px solid black;
     }
-    .poison-task-block #poison-task, .iron2-task-block #iron2-task, .day-reset-task-block #day-reset-task {
+    .poison-task-block #poison-task, .iron2-task-block #iron2-task, .day-reset-task-block #day-reset-task, .force-pve-task-block #force-pve-task {
         font-size: 24px;
         line-height: 34px;
         letter-spacing: 3px;
         margin-top: 38px;
     }
-    .poison-task-block.active, .iron2-task-block.active, .day-reset-task-block.active {
+    .poison-task-block.active, .iron2-task-block.active, .day-reset-task-block.active, .force-pve-task-block.active {
         background-color: green;
     }
 </style>
