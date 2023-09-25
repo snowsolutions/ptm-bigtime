@@ -1,65 +1,87 @@
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<div class="function-row">
-    <div class="time-block">
-        <span class="big-num" id="time-minute"></span>
+<div class="function-board">
+    <div class="function-row">
+        <div class="time-block">
+            <span class="big-num" id="time-minute"></span>
+        </div>
+        <div class="function-block toggle">
+            <span class="function-label">Iddle</span>
+            <span class="function-state">Sleep</span>
+        </div>
+        <div class="function-block toggle-timer toggle">
+            <span class="function-label">Timer</span>
+            <span class="function-state">ON</span>
+        </div>
+        <div class="function-block">
+            <button class="function-btn setup-timer">Setup</button>
+        </div>
     </div>
-    <div class="function-block toggle">
-        <span class="function-label">Iddle</span>
-        <span class="function-state">Sleep</span>
+    <div class="function-row">
+        <div class="time-block">
+            <span class="big-num" id="safe-status"></span>
+        </div>
+        <div class="text-block" id="safe-hour-start">
+            <span class="text-label">Safe hour start</span>
+            <input type="text" />
+            <span class="text-value"></span>
+        </div>
+        <div class="text-block" id="safe-hour-end">
+            <span class="text-label">Safe hour end</span>
+            <input type="text" />
+            <span class="text-value"></span>
+        </div>
+        <div class="function-block">
+            <button class="function-btn set-safe-hour">Set</button>
+        </div>
     </div>
-    <div class="function-block">
-        <button class="function-btn hit-core">Core</button>
+    <div class="function-row">
+        <div class="normal-block critical-flag-block">
+            <span class="big-num" id="critical-flag"></span>
+        </div>
+        <div class="function-block">
+            <button class="function-btn dead-threshold">Dead</button>
+        </div>
+        <div class="text-block" id="dead-count">
+            <span class="text-label">Dead count</span>
+            <span class="text-value"></span>
+        </div>
+        <div class="normal-block frequent-dead-block">
+            <span class="big-num" id="frequent-dead-flag">F.Dead</span>
+        </div>
     </div>
-    <div class="function-block toggle-timer toggle">
-        <span class="function-label">Timer</span>
-        <span class="function-state">ON</span>
-    </div>
-    <div class="function-block">
-        <button class="function-btn setup-timer">Setup</button>
+    <div class="function-row">
+        <div class="normal-block poison-task-block">
+            <span class="big-num" id="poison-task">Poison</span>
+        </div>
+        <div class="normal-block iron2-task-block">
+            <span class="big-num" id="iron2-task">Iron2</span>
+        </div>
+        <div class="normal-block day-reset-task-block">
+            <span class="big-num" id="day-reset-task">Reset</span>
+        </div>
+        <div class="normal-block force-pve-task-block">
+            <span class="big-num" id="force-pve-task">Force PVE</span>
+        </div>
     </div>
 </div>
-<div class="function-row">
-    <div class="time-block">
-        <span class="big-num" id="safe-status"></span>
-    </div>
-    <div class="text-block" id="safe-hour-start">
-        <span class="text-label">Safe hour start</span>
-        <input type="text" />
-        <span class="text-value"></span>
-    </div>
-    <div class="text-block" id="safe-hour-end">
-        <span class="text-label">Safe hour end</span>
-        <input type="text" />
-        <span class="text-value"></span>
-    </div>
-    <div class="function-block">
-        <button class="function-btn set-safe-hour">Set</button>
-    </div>
-</div>
-<div class="function-row">
-    <div class="normal-block critical-flag-block">
-        <span class="big-num" id="critical-flag"></span>
-    </div>
-    <div class="function-block">
-        <button class="function-btn dead-threshold">Dead</button>
-    </div>
-    <div class="text-block" id="dead-count">
-        <span class="text-label">Dead count</span>
-        <span class="text-value"></span>
-    </div>
-</div>
-<div class="function-row">
-    <div class="normal-block poison-task-block">
-        <span class="big-num" id="poison-task">Poison</span>
-    </div>
-    <div class="normal-block iron2-task-block">
-        <span class="big-num" id="iron2-task">Iron2</span>
-    </div>
-    <div class="normal-block day-reset-task-block">
-        <span class="big-num" id="day-reset-task">Reset</span>
-    </div>
-    <div class="normal-block force-pve-task-block">
-        <span class="big-num" id="force-pve-task">Force PVE</span>
+<div class="function-board">
+    <div class="function-row">
+        <table class="table" id="dead-record-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Dead at</th>
+                    <th>Distance</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 <script>
@@ -76,14 +98,19 @@
         window.serverResetHour = 4;
         window.serverResetMin = 0;
         window.serverResetFlag = false;
+        var lastDeadAt = null;
+        var deadRecords = [];
+        var restoreXpRecords = [];
+        var deadDistanceLimit = 300;
+        var timeToRemoveFDeadFlag = 120000;
 
         //Init
         init();
 
         function init() {
-            initSafeHour()
-            initServerResetObserver()
-            $('#dead-count span.text-value').text(deadCount)
+            initSafeHour();
+            initServerResetObserver();
+            $("#dead-count span.text-value").text(deadCount);
         }
 
         function updateTime() {
@@ -91,16 +118,16 @@
             let current = new Date();
             let min = current.getMinutes();
             if (min > 10) {
-                min = min.toString().substring(1,2);
+                min = min.toString().substring(1, 2);
             }
             minute.innerHTML = min;
         }
 
         function initSafeHour() {
-            let safeHStart = $('#safe-hour-start .text-value')
-            let safeHEnd = $('#safe-hour-end .text-value')
-            safeHStart.text(startSafeHour)
-            safeHEnd.text(endSafeHour)
+            let safeHStart = $("#safe-hour-start .text-value");
+            let safeHEnd = $("#safe-hour-end .text-value");
+            safeHStart.text(startSafeHour);
+            safeHEnd.text(endSafeHour);
             //safeHourInterval = setInterval(updateSafeHour, 500);
         }
 
@@ -112,39 +139,43 @@
             let current = new Date();
             let currentHour = current.getHours();
             let currentMin = current.getMinutes();
-            let currentSec = current.getSeconds()
-            if (currentHour == window.serverResetHour && currentMin == window.serverResetMin && currentSec < 3) {
+            let currentSec = current.getSeconds();
+            if (
+                currentHour == window.serverResetHour &&
+                currentMin == window.serverResetMin &&
+                currentSec < 3
+            ) {
                 if (!window.serverResetFlag) {
-                    $('.day-reset-task-block').addClass('active')
+                    $(".day-reset-task-block").addClass("active");
                     window.serverResetFlag = true;
                     setTimeout(function () {
-                        $('.day-reset-task-block').removeClass('active')
+                        $(".day-reset-task-block").removeClass("active");
                         window.serverResetFlag = false;
-                    }, 3000)
+                    }, 3000);
                 }
             }
         }
 
         function updateSafeHour() {
-            let safeHour = $('#safe-status')
+            let safeHour = $("#safe-status");
             let current = new Date();
             let currentHour = current.getHours();
             if (currentHour < 10) {
                 currentHour = "0" + currentHour;
             }
-            safeHour.text(currentHour)
+            safeHour.text(currentHour);
 
             if (startSafeHour <= currentHour && currentHour <= endSafeHour) {
-                console.log('in safe hour');
+                console.log("in safe hour");
                 isInSafeHour = true;
             } else {
-                console.log('NOT in safe hour');
+                console.log("NOT in safe hour");
                 isInSafeHour = false;
             }
             if (!isInSafeHour) {
-                safeHour.removeClass('safe')
+                safeHour.removeClass("safe");
             } else {
-                safeHour.addClass('safe')
+                safeHour.addClass("safe");
             }
         }
 
@@ -193,39 +224,96 @@
         }
 
         function checkDeadThreshold() {
-            console.log('dead');
-            $('#dead-count span.text-value').text(deadCount)
+            console.log("dead");
+            $("#dead-count span.text-value").text(deadCount);
             if (deadCount >= 5) {
-                $('.critical-flag-block').css('background-color', 'red')
+                $(".critical-flag-block").css("background-color", "red");
             }
+        }
+
+        function updateDeadTable(deadObject) {
+            let table = $("#dead-record-table");
+            deadRecords.push(deadObject);
+            let tbody = table.find("tbody");
+            tbody.empty();
+            let content = "";
+            for (let i = 0; i < deadRecords.length; i++) {
+                let record = deadRecords[i];
+                let newContent =
+                    "<tr>" +
+                    "<td>" +
+                    record.id +
+                    "</td>" +
+                    "<td>" +
+                    record.dead_at +
+                    "</td>" +
+                    "<td>" +
+                    record.distance +
+                    "</td>" +
+                    "</tr>";
+                content += newContent;
+            }
+            tbody.html(content);
+            console.log("updateDeadTable");
         }
 
         jQuery(".hit-core").click(function () {
             hitCore();
-        });      
+        });
 
         jQuery(".poison-task-block").click(function () {
             var _this = $(this);
-            _this.toggleClass('active');
+            _this.toggleClass("active");
         });
 
         jQuery(".iron2-task-block").click(function () {
             var _this = $(this);
-            _this.toggleClass('active');
-        }); 
+            _this.toggleClass("active");
+        });
 
         jQuery(".day-reset-task-block").click(function () {
             var _this = $(this);
-            _this.toggleClass('active');
+            _this.toggleClass("active");
         });
 
         jQuery(".force-pve-task-block").click(function () {
             var _this = $(this);
-            _this.toggleClass('active');
+            _this.toggleClass("active");
         });
 
         jQuery(".dead-threshold").click(function () {
             deadCount++;
+            let now = new Date();
+            let currentTimestamp = now.getTime();
+            console.log(lastDeadAt);
+            let timeSinceLastDead = 0;
+            if (lastDeadAt !== null) {
+                timeSinceLastDead = Math.round(
+                    (currentTimestamp - lastDeadAt) / 1000
+                );
+            }
+
+            updateDeadTable({
+                id: deadCount,
+                dead_at:
+                    now.getHours() +
+                    ":" +
+                    now.getMinutes() +
+                    ":" +
+                    now.getSeconds(),
+                distance: timeSinceLastDead + " (s)",
+            });
+
+            if (lastDeadAt !== null && timeSinceLastDead < deadDistanceLimit) {
+                let fdeadBlock = $('.frequent-dead-block')
+                fdeadBlock.toggleClass('active')
+                setTimeout(function () {
+                    fdeadBlock.removeClass('active')
+                }, timeToRemoveFDeadFlag)
+            }
+
+
+            lastDeadAt = currentTimestamp;
             checkDeadThreshold();
         });
 
@@ -243,22 +331,42 @@
             let _this = jQuery(this);
             _this.toggleClass("off");
         });
-        
+
         jQuery(".set-safe-hour").click(function () {
-            startSafeHour = $('#safe-hour-start input').val()
-            endSafeHour = $('#safe-hour-end input').val()
-            let safeHStart = $('#safe-hour-start .text-value')
-            let safeHEnd = $('#safe-hour-end .text-value')
-            safeHStart.text(startSafeHour)
-            safeHEnd.text(endSafeHour)
-            clearInterval(safeHourInterval)
-            initSafeHour()
+            startSafeHour = $("#safe-hour-start input").val();
+            endSafeHour = $("#safe-hour-end input").val();
+            let safeHStart = $("#safe-hour-start .text-value");
+            let safeHEnd = $("#safe-hour-end .text-value");
+            safeHStart.text(startSafeHour);
+            safeHEnd.text(endSafeHour);
+            clearInterval(safeHourInterval);
+            initSafeHour();
         });
     });
 </script>
 <style>
+    .table {
+        width: 300px;
+    }
+    .table,
+    th,
+    td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        border-color: #a74324;
+    }
+    th,
+    td {
+        padding: 10px;
+    }
+    .function-board {
+        display: block;
+        width: 420px;
+        float: left;
+        margin: 0 0;
+    }
     .function-row {
-        width: 100%;
+        width: 420px;
         display: inline-block;
         margin: 5px 0;
     }
@@ -369,19 +477,30 @@
     .critical-flag-block {
         background-color: green;
     }
-    .poison-task-block, .iron2-task-block, .force-pve-task-block {
+    .poison-task-block,
+    .iron2-task-block,
+    .force-pve-task-block,
+    .frequent-dead-block {
         background-color: red;
         height: 98px;
         width: 98px;
         border: 1px solid black;
     }
-    .poison-task-block #poison-task, .iron2-task-block #iron2-task, .day-reset-task-block #day-reset-task, .force-pve-task-block #force-pve-task {
-        font-size: 24px;
-        line-height: 34px;
+    .poison-task-block #poison-task,
+    .iron2-task-block #iron2-task,
+    .day-reset-task-block #day-reset-task,
+    .force-pve-task-block #force-pve-task,
+    .frequent-dead-block #frequent-dead-flag {
+        font-size: 16px;
+        line-height: 16px;
         letter-spacing: 3px;
-        margin-top: 38px;
+        margin-top: 42px;
     }
-    .poison-task-block.active, .iron2-task-block.active, .day-reset-task-block.active, .force-pve-task-block.active {
+    .poison-task-block.active,
+    .iron2-task-block.active,
+    .day-reset-task-block.active,
+    .force-pve-task-block.active,
+    .frequent-dead-block.active {
         background-color: green;
     }
 </style>
